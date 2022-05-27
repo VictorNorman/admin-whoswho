@@ -1,0 +1,11 @@
+{
+  "targets": {
+    "vtn2-whoswho": {
+      "hosting": {
+        "admin-whoswho": [
+          "vtn2-whoswho"
+        ]
+      }
+    }
+  }
+}
