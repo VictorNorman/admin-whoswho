@@ -12,6 +12,12 @@ export interface FirestorePeopleRecord {
   imageData: string;
 }
 
+export interface FirestoreOrgRecord {
+  adminSecret: string;
+  organization: string;
+  secret: string;
+}
+
 @Injectable({
   providedIn: 'root'
 })
@@ -19,8 +25,7 @@ export class DataService {
 
   private people: FirestorePeopleRecord[] = [];
   public peopleSubj = new BehaviorSubject<FirestorePeopleRecord[]>(null);
-  org = 'Sherman Street';
-  password = '123';
+  public org = '';
 
   constructor(
     private db: AngularFirestore,
@@ -55,5 +60,23 @@ export class DataService {
   updatePerson(person: FirestorePeopleRecord): void {
     const { id, ...personWithoutId } = person
     this.db.collection<FirestorePeopleRecord>('people').doc(person.id).set(personWithoutId);
+  }
+
+  checkOrgAndPassword(org: string, passwd: string): Promise<string> {
+    return new Promise(async (resolve) => {
+      const res = await this.db.collection<FirestoreOrgRecord>('organization',
+        ref => ref.where('organization', '==', org)).get().toPromise();
+      if (res.empty) {
+        return resolve('Bad organization name');
+      }
+      // Should be only 1 doc.
+      res.forEach((doc) => {
+        if (doc.data().adminSecret === passwd) {
+          this.org = org;
+          return resolve('Success');
+        }
+      });
+      return resolve('Bad admin password');
+    });
   }
 }

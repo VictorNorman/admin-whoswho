@@ -10,6 +10,7 @@ import { DataService } from '../data.service';
 export class LoginComponent implements OnInit {
 
   title = 'Who\'s who Admin';
+  public feedback = '';
 
   constructor(
     private router: Router,
@@ -19,13 +20,13 @@ export class LoginComponent implements OnInit {
   ngOnInit(): void {
   }
 
-  public submit(login) {
-    console.log('login is ', login);
-    console.log('org is', login.value.org);
-    console.log('password is ', login.value.password);
-
-    // this.dataSvc.checkOrgAndPassword(login.value.org, login.value.password);
-
-    this.router.navigateByUrl('main');
+  public async submit(login) {
+    const res = await this.dataSvc.checkOrgAndPassword(login.value.org, login.value.password);
+    if (res === 'Success') {
+      this.router.navigateByUrl('main');
+    } else {
+      this.feedback = '';
+      this.feedback = res;
+    }
   }
 }

@@ -13,8 +13,11 @@
                         <label for="password">Enter your admin password:</label>
                     </div>
                     <input type="password" name="password" class="form-control" ngModel required>
-                    <br>
+                    <p></p>
                     <button [disabled]="!login.valid">Submit</button>
+                    <p>
+                        {{feedback}}
+                    </p>
                 </form>
             </div>
         </div>
