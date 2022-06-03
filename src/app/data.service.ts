@@ -30,14 +30,6 @@ export class DataService {
   constructor(
     private db: AngularFirestore,
   ) {
-    this.db.collection<FirestorePeopleRecord>('people',
-      ref => ref.where('belongsTo', '==', this.org)).valueChanges({ idField: 'id'}).subscribe(
-        people => {
-          this.people = people;
-          // console.log(JSON.stringify(people, null, 2));
-          this.peopleSubj.next(this.people);
-        }
-      );
   }
 
   getData(): FirestorePeopleRecord[] {
@@ -73,6 +65,15 @@ export class DataService {
       res.forEach((doc) => {
         if (doc.data().adminSecret === passwd) {
           this.org = org;
+          this.db.collection<FirestorePeopleRecord>('people',
+            ref => ref.where('belongsTo', '==', this.org)).valueChanges({ idField: 'id' }).subscribe(
+              people => {
+                this.people = people;
+                // console.log(JSON.stringify(people, null, 2));
+                this.peopleSubj.next(this.people);
+              }
+            );
+
           return resolve('Success');
         }
       });

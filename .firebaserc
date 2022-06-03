@@ -1,9 +1,13 @@
 {
+  "projects": {
+    "admin": "whoswho-admin",
+    "staging": "vtn2-whoswho"
+  },
   "targets": {
     "vtn2-whoswho": {
       "hosting": {
-        "admin-whoswho": [
-          "vtn2-whoswho"
+        "whoswho-admin": [
+          "whoswho-admin"
         ]
       }
     }
