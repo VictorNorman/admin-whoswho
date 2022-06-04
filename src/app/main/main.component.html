@@ -1,7 +1,12 @@
 <div class="content">
     <h2> Organization: {{org}}</h2>
     <p></p>
-    <button [disabled]="inEditingMode()" class="pure-button pure-button-primary" (click)="openNewForm()">New</button>
+    <button [disabled]="inEditingMode()" class="pure-button pure-button-primary top-button" (click)="openNewForm()">
+        New
+    </button>
+    Daily quiz:
+    <button class="pure-button pure-button-primary top-button" (click)="chooseRandomPeople()">Choose random</button>
+    <button class="pure-button pure-button-primary top-button" (click)="useSelectedPeople()">Use selections below</button>
     <span class="feedback">{{feedback}}</span>
     <div *ngIf="newFormOpen">
         <form class="pure-form">
@@ -20,6 +25,7 @@
     <p></p>
     <table class="pure-table pure-table-horizontal pure-table-striped">
         <thead>
+            <th></th>
             <th>First name</th>
             <th>Last name</th>
             <th>Nick name</th>
@@ -28,6 +34,9 @@
             <th>Del</th>
         </thead>
         <tr *ngFor="let p of people; let i = index">
+            <td>
+                <input type="checkbox" [checked]="isSelectionBoxChecked(i)" [(ngModel)]="checks[i]">
+            </td>
             <td>
                 <input *ngIf="editingLine === i" value={{p.firstName}}
                   name="firstName" (change)="applyPersonEdit($event)">

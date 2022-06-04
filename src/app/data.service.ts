@@ -80,4 +80,13 @@ export class DataService {
       return resolve('Bad admin password');
     });
   }
+
+  getRandomPeople(num: number): FirestorePeopleRecord[] {
+    // https://stackoverflow.com/questions/19269545/how-to-get-a-number-of-random-elements-from-an-array
+    return this.people
+      .map(x => ({ x, r: Math.random() }))
+      .sort((a, b) => a.r - b.r)
+      .map(a => a.x)
+      .slice(0, num);
+  }
 }

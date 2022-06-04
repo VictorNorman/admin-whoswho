@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { DataService, FirestorePeopleRecord } from '../data.service';
 
 
+
 @Component({
   selector: 'app-main',
   templateUrl: './main.component.html',
@@ -18,6 +19,9 @@ export class MainComponent implements OnInit {
   public editingLine = -1;
   public personBeingEdited: FirestorePeopleRecord;
 
+  private dailyQuizPeople: FirestorePeopleRecord[] = []
+  public checks: boolean[];
+
   constructor(private dataSvc: DataService) {
   }
 
@@ -30,6 +34,11 @@ export class MainComponent implements OnInit {
         this.people = people
           .sort(((a, b) => a.firstName.localeCompare(b.firstName)))
           .sort(((a, b) => a.lastName.localeCompare(b.lastName)));
+        this.checks = Array(this.people.length).fill(false);
+      //   this.checks = [];
+      //   for (let i = 0; i < this.people.length; i++) {
+      //     this.checks.push(false);
+      //   }
       }
     });
   }
@@ -89,6 +98,29 @@ export class MainComponent implements OnInit {
     reader.onload = e => {
       this.newPerson.imageData = reader.result as string;
     }
+  }
+
+  chooseRandomPeople(): void {
+    this.dailyQuizPeople = this.dataSvc.getRandomPeople(5);
+    this.feedback = this.dailyQuizPeople.map(p => p.firstName + " " + p.lastName).join(", ");
+    // check the boxes...
+  }
+
+  // compute from the list of randomly chosen people, if the person's checkbox should be
+  // selected.
+  isSelectionBoxChecked(i: number): boolean {
+    return this.dailyQuizPeople.includes(this.people[i]);
+  }
+
+  // Compute the dailyQuizPeople list from the selected checkboxes.
+  useSelectedPeople() {
+    this.dailyQuizPeople = [];
+    for (let i = 0; i < this.checks.length; i++) {
+      if (this.checks[i]) {
+        this.dailyQuizPeople.push(this.people[i]);
+      }
+    }
+    this.feedback = this.dailyQuizPeople.map(p => p.firstName + " " + p.lastName).join(", ");
   }
 
   private updateFeedbackString(str: string): void {
