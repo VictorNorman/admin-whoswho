@@ -35,10 +35,6 @@ export class MainComponent implements OnInit {
           .sort(((a, b) => a.firstName.localeCompare(b.firstName)))
           .sort(((a, b) => a.lastName.localeCompare(b.lastName)));
         this.checks = Array(this.people.length).fill(false);
-      //   this.checks = [];
-      //   for (let i = 0; i < this.people.length; i++) {
-      //     this.checks.push(false);
-      //   }
       }
     });
   }
@@ -103,10 +99,10 @@ export class MainComponent implements OnInit {
   chooseRandomPeople(): void {
     this.dailyQuizPeople = this.dataSvc.getRandomPeople(5);
     this.feedback = this.dailyQuizPeople.map(p => p.firstName + " " + p.lastName).join(", ");
-    // check the boxes...
+    this.dataSvc.saveDailyQuizSelections(this.dailyQuizPeople);
   }
 
-  // compute from the list of randomly chosen people, if the person's checkbox should be
+  // from the list of randomly chosen people, compute if the person's checkbox should be
   // selected.
   isSelectionBoxChecked(i: number): boolean {
     return this.dailyQuizPeople.includes(this.people[i]);
@@ -121,6 +117,7 @@ export class MainComponent implements OnInit {
       }
     }
     this.feedback = this.dailyQuizPeople.map(p => p.firstName + " " + p.lastName).join(", ");
+    this.dataSvc.saveDailyQuizSelections(this.dailyQuizPeople);
   }
 
   private updateFeedbackString(str: string): void {

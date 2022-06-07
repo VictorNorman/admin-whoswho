@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { AngularFirestore } from '@angular/fire/firestore';
 import { BehaviorSubject } from 'rxjs';
+import firebase from 'firebase/app';
 
 
 export interface FirestorePeopleRecord {
@@ -41,7 +42,7 @@ export class DataService {
   }
 
   addPerson(person: FirestorePeopleRecord): void {
-    const { id, ...personWithoutId } = person
+    const { id, ...personWithoutId } = person;
     this.db.collection<FirestorePeopleRecord>('people').add(personWithoutId);
   }
 
@@ -56,28 +57,25 @@ export class DataService {
 
   checkOrgAndPassword(org: string, passwd: string): Promise<string> {
     return new Promise(async (resolve) => {
-      const res = await this.db.collection<FirestoreOrgRecord>('organization',
-        ref => ref.where('organization', '==', org)).get().toPromise();
-      if (res.empty) {
+      const doc = await this.db.collection<FirestoreOrgRecord>('organization').doc(org).get().toPromise();
+      if (!doc.data()) {
         return resolve('Bad organization name');
       }
-      // Should be only 1 doc.
-      res.forEach((doc) => {
-        if (doc.data().adminSecret === passwd) {
-          this.org = org;
-          this.db.collection<FirestorePeopleRecord>('people',
-            ref => ref.where('belongsTo', '==', this.org)).valueChanges({ idField: 'id' }).subscribe(
-              people => {
-                this.people = people;
-                // console.log(JSON.stringify(people, null, 2));
-                this.peopleSubj.next(this.people);
-              }
-            );
+      if (doc.data().adminSecret === passwd) {
+        this.org = org;
+        this.db.collection<FirestorePeopleRecord>('people',
+          ref => ref.where('belongsTo', '==', this.org)).valueChanges({ idField: 'id' }).subscribe(
+            people => {
+              this.people = people;
+              // console.log(JSON.stringify(people, null, 2));
+              this.peopleSubj.next(this.people);
+            }
+          );
 
-          return resolve('Success');
-        }
-      });
-      return resolve('Bad admin password');
+        return resolve('Success');
+      } else {
+        return resolve('Bad admin password');
+      }
     });
   }
 
@@ -88,5 +86,18 @@ export class DataService {
       .sort((a, b) => a.r - b.r)
       .map(a => a.x)
       .slice(0, num);
+  }
+
+  saveDailyQuizSelections(dailyQuizPeople: FirestorePeopleRecord[]) {
+    const people = dailyQuizPeople.map(dqp => {
+      return {
+        doc: dqp.id
+      }
+    });
+    // https://stackoverflow.com/questions/49942109/how-to-access-firestore-timestamp-from-firebase-cloud-function
+    this.db.collection(`organization/${this.org}/dailies`).add({
+      timestamp: firebase.firestore.Timestamp.now(),
+      people
+    });
   }
 }
