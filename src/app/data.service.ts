@@ -101,3 +101,12 @@ export class DataService {
     });
   }
 }
+
+// function x() {
+//   get each organization;
+//   foreach organization org {
+//     get people list;
+//     randPeople = getRandomPeople(10);
+//     saveDailyQuizSelections(randPeople)
+//   }
+

@@ -53,7 +53,12 @@ export class MainComponent implements OnInit {
     this.newFormOpen = false;
     // console.log(this.newPerson);
     this.dataSvc.addPerson(this.newPerson);
-    this.feedback = 'New person added';
+    this.updateFeedbackString('New person added');
+    // clear the fields.
+    this.newPerson.firstName = '';
+    this.newPerson.lastName = '';
+    this.newPerson.nickName = '';
+    this.newPerson.imageData = '';
   }
 
   cancelNew() {
@@ -97,7 +102,7 @@ export class MainComponent implements OnInit {
   }
 
   chooseRandomPeople(): void {
-    this.dailyQuizPeople = this.dataSvc.getRandomPeople(5);
+    this.dailyQuizPeople = this.dataSvc.getRandomPeople(10);
     this.feedback = this.dailyQuizPeople.map(p => p.firstName + " " + p.lastName).join(", ");
     this.dataSvc.saveDailyQuizSelections(this.dailyQuizPeople);
   }
@@ -134,6 +139,5 @@ export class MainComponent implements OnInit {
       imageData: '',
     };
   }
-
 
 }
