@@ -1,13 +1,8 @@
 import * as functions from "firebase-functions";
 import * as admin from "firebase-admin";
+import {MulticastMessage} from "firebase-admin/lib/messaging/messaging-api";
 
-// // Start writing Firebase Functions
-// // https://firebase.google.com/docs/functions/typescript
-//
-// export const helloWorld = functions.https.onRequest((request, response) => {
-//   functions.logger.info("Hello logs!", {structuredData: true});
-//   response.send("Hello from Firebase!");
-// });
+
 admin.initializeApp();
 export const createDailyQuiz = functions.pubsub.schedule("every day 02:00")
     .onRun(async () => {
@@ -28,4 +23,32 @@ export const createDailyQuiz = functions.pubsub.schedule("every day 02:00")
         timestamp: admin.firestore.Timestamp.now(),
         people: quizPeople,
       });
+
+      // generate reminder message to users
+      // if the token has been updated within 3 days, send the message.
+      const nowDateMillis = (new Date()).getTime();
+      // functions.logger.info("nowDateMillis is", nowDateMillis);
+      const tokens: string[] = [];
+      (await db.collection("tokens").get()).docs
+          .forEach((doc) => {
+            const appUsedTime: admin.firestore.Timestamp =
+              doc.data()["lastTimeAppUsed"];
+            const appUsedDateMillis = appUsedTime.toDate().getTime();
+            // eslint-disable-next-line max-len
+            // functions.logger.info(`for token ${doc.id}, timestamp is ${appUsedDateMillis}`);
+            if (nowDateMillis - appUsedDateMillis < 1000 * 3600 * 24 * 3) {
+              tokens.push(doc.id);
+              functions.logger.info(`add ${doc.id} to tokens list`);
+            }
+          });
+      const msgs: MulticastMessage = {
+        notification: {
+          title: "ImageBearers",
+          body: "A new daily quiz is now available",
+        },
+        tokens: tokens,
+      };
+
+      functions.logger.info("calling sendMulticast");
+      admin.messaging().sendMulticast(msgs);
     });
