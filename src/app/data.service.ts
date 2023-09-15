@@ -5,7 +5,7 @@ import firebase from 'firebase/app';
 
 
 export interface FirestorePeopleRecord {
-  id?: string;          // firebase unique id
+  id?: string;          // firestore db unique id
   belongsTo: string;
   firstName: string;
   lastName: string;
@@ -19,6 +19,12 @@ export interface FirestoreOrgRecord {
   secret: string;
 }
 
+export interface DailyQuizRecord {
+  id?: string;         // firestore db unique id
+  timestamp: firebase.firestore.Timestamp;
+  people: Array<{ doc: string }>;
+}
+
 @Injectable({
   providedIn: 'root'
 })
@@ -27,6 +33,8 @@ export class DataService {
   private people: FirestorePeopleRecord[] = [];
   public peopleSubj = new BehaviorSubject<FirestorePeopleRecord[]>(null);
   public org = '';
+  private dailyQuizzes: DailyQuizRecord[] = [];
+  public dailyQuizzesSubj = new BehaviorSubject<DailyQuizRecord[]>(null);
 
   constructor(
     private db: AngularFirestore,
@@ -95,9 +103,24 @@ export class DataService {
       }
     });
     // https://stackoverflow.com/questions/49942109/how-to-access-firestore-timestamp-from-firebase-cloud-function
-    this.db.collection(`organization/${this.org}/dailies`).add({
+    this.db.collection<DailyQuizRecord>(`organization/${this.org}/dailies`).add({
       timestamp: firebase.firestore.Timestamp.now(),
       people
+    });
+  }
+
+  public getAllDailyQuizzes() {
+    this.dailyQuizzes = [];
+    this.db.collection<DailyQuizRecord>(`organization/${this.org}/dailies`).valueChanges({ idField: 'id' })
+      .subscribe(dailies => {
+        this.dailyQuizzes = dailies;
+        this.dailyQuizzesSubj.next(this.dailyQuizzes);
+      });
+  }
+
+  public delQuizzes(quizzes2delIds: string[]) {
+    quizzes2delIds.forEach(id => {
+      this.db.collection<DailyQuizRecord>(`organization/${this.org}/dailies`).doc(id).delete();
     });
   }
 }

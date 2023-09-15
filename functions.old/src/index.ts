@@ -4,7 +4,7 @@ import {MulticastMessage} from "firebase-admin/lib/messaging/messaging-api";
 
 
 admin.initializeApp();
-export const createDailyQuiz = functions.pubsub.schedule("every day 02:00")
+export const createDailyQuiz = functions.pubsub.schedule("every day 01:00")
     .onRun(async () => {
       const db = admin.firestore();
       const people = await db.collection("people")
@@ -46,9 +46,17 @@ export const createDailyQuiz = functions.pubsub.schedule("every day 02:00")
           title: "ImageBearers",
           body: "A new daily quiz is now available",
         },
+        webpush: {
+          fcmOptions: {
+            link: "https://imagebearers.web.app",
+          },
+          notification: {
+            icon: "assets/icons/icon-96x96.png",
+          },
+        },
         tokens: tokens,
       };
 
-      functions.logger.info("calling sendMulticast");
+      // functions.logger.info("calling sendMulticast");
       admin.messaging().sendMulticast(msgs);
     });

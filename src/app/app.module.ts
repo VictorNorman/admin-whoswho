@@ -11,13 +11,15 @@ import { LoginComponent } from './login/login.component';
 import { MainComponent } from './main/main.component';
 import { FormsModule } from '@angular/forms';
 import { IonicModule } from '@ionic/angular';
-import { BrowserAnimationsModule } from '@angular/platform-browser/animations';   // for icons.
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { DailyQuizzesComponent } from './daily-quizzes/daily-quizzes.component';   // for icons.
 
 @NgModule({
   declarations: [
     AppComponent,
     LoginComponent,
     MainComponent,
+    DailyQuizzesComponent,
   ],
   imports: [
     BrowserModule,

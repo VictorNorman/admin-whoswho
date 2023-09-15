@@ -41,7 +41,6 @@ export class MainComponent implements OnInit {
 
   applyPersonEdit(e) {
     this.personBeingEdited[e.target.name] = e.target.value;
-    console.log(this.personBeingEdited);
   }
 
 

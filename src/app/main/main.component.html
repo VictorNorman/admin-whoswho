@@ -1,6 +1,12 @@
 <div class="content">
     <h2> Organization: {{org}}</h2>
     <p></p>
+    <div>
+        <button class="pure-button pure-button-primary top-button" routerLink="/daily-quizzes">
+            See Daily Quizzes
+        </button>
+    </div>
+    <p></p>
     <button [disabled]="inEditingMode()" class="pure-button pure-button-primary top-button" (click)="openNewForm()">
         New
     </button>
@@ -35,37 +41,39 @@
                 <th>{{editingLine === -1 ? 'Edit' : 'Apply'}}</th>
                 <th>Del</th>
             </thead>
-            <tr *ngFor="let p of people; let i = index">
-                <td>
-                    <input type="checkbox" [checked]="isSelectionBoxChecked(i)" [(ngModel)]="checks[i]">
-                </td>
-                <td>
-                    <input *ngIf="editingLine === i" value={{p.firstName}} name="firstName"
-                        (change)="applyPersonEdit($event)">
-                    <span *ngIf="editingLine !== i">{{p.firstName}}</span>
-                </td>
-                <td>
-                    <input *ngIf="editingLine === i" value={{p.lastName}} name="lastName"
-                        (change)="applyPersonEdit($event)">
-                    <span *ngIf="editingLine !== i">{{p.lastName}}</span>
-                </td>
-                <td>
-                    <input *ngIf="editingLine === i" value={{p.nickName}} name="nickName"
-                        (change)="applyPersonEdit($event)">
-                    <span *ngIf="editingLine !== i">{{p.nickName}}</span>
-                </td>
-                <td><img width="30px" [src]="p.imageData"></td>
-                <td>
-                    <button [disabled]="editingLine !== -1 && editingLine !== i" (click)="editPerson(i)">
-                        <ion-icon name="create"></ion-icon>
-                    </button>
-                </td>
-                <td>
-                    <button [disabled]="inEditingMode()" (click)="deletePerson(i)">
-                        <ion-icon name="trash-outline"></ion-icon>
-                    </button>
-                </td>
-            </tr>
+            <tbody>
+                <tr *ngFor="let p of people; let i = index">
+                    <td>
+                        <input type="checkbox" [checked]="isSelectionBoxChecked(i)" [(ngModel)]="checks[i]">
+                    </td>
+                    <td>
+                        <input *ngIf="editingLine === i" value={{p.firstName}} name="firstName"
+                            (change)="applyPersonEdit($event)">
+                        <span *ngIf="editingLine !== i">{{p.firstName}}</span>
+                    </td>
+                    <td>
+                        <input *ngIf="editingLine === i" value={{p.lastName}} name="lastName"
+                            (change)="applyPersonEdit($event)">
+                        <span *ngIf="editingLine !== i">{{p.lastName}}</span>
+                    </td>
+                    <td>
+                        <input *ngIf="editingLine === i" value={{p.nickName}} name="nickName"
+                            (change)="applyPersonEdit($event)">
+                        <span *ngIf="editingLine !== i">{{p.nickName}}</span>
+                    </td>
+                    <td><img width="30px" [src]="p.imageData"></td>
+                    <td>
+                        <button [disabled]="editingLine !== -1 && editingLine !== i" (click)="editPerson(i)">
+                            <ion-icon name="create"></ion-icon>
+                        </button>
+                    </td>
+                    <td>
+                        <button [disabled]="inEditingMode()" (click)="deletePerson(i)">
+                            <ion-icon name="trash-outline"></ion-icon>
+                        </button>
+                    </td>
+                </tr>
+            </tbody>
         </table>
     </div>
 </div>

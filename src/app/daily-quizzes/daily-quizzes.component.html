@@ -1,0 +1,31 @@
+<div class="content">
+
+    <h2>Daily Quizzes</h2>
+    <div>
+        <button class="pure-button pure-button-primary top-button" routerLink="/main">
+            See Image Bearers
+        </button>
+    </div>
+
+    <p></p>
+
+    <div class="quizzes-table-wrapper">
+        <table id="quizzes-table" class="pure-table pure-table-horizontal pure-table-striped">
+            <thead>
+                <th><input type="checkbox" [(ngModel)]="allCheckboxesSelected" (change)="toggleAllCheckboxes()"></th>
+                <th>Date</th>
+                <!-- <th>People</th> -->
+            </thead>
+            <tbody>
+                <tr *ngFor="let dq of dailyQuizzes; let i = index">
+                    <td>
+                        <input type="checkbox" (change)="checkboxChanged()" [(ngModel)]="checks[i]">
+                    </td>
+
+                    <td>{{dq.timestamp.toDate()}}</td>
+                </tr>
+            </tbody>
+        </table>
+        <button class="pure-button pure-button-primary" (click)="deleteSelections()">Delete selections</button>
+    </div>
+</div>
